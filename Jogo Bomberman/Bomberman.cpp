@@ -16,13 +16,18 @@ int main(void) {
     
     while (!WindowShouldClose())
     {
+        
+        // Fazer uma função de update depois
         PLAYER.updateposplayer(&PLAYER.posplayer.x, &PLAYER.posplayer.y);
-        BOMBA.lancaBomba(PLAYER.posplayer.x, PLAYER.posplayer.y, PLAYER.playerSize);
-        BOMBA.explodebomba();
+        BOMBA.lancaBomba(&PLAYER);
+        BOMBA.explodebomba(&PLAYER);
+        
+        
+        
         BeginDrawing();
         ClearBackground(WHITE);
         MAPA.desenhoMapa();
-        BOMBA.desenhabomba(PLAYER.posplayer.x, PLAYER.posplayer.y, PLAYER.playerSize);
+        BOMBA.desenhabomba();
         PLAYER.desenhoplayer();
         EndDrawing();
       
@@ -34,8 +39,3 @@ int main(void) {
 }
 
 
-void update(void){
-
-
-
-}
