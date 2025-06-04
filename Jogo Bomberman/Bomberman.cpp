@@ -18,6 +18,7 @@ int main(void) {
     {
         PLAYER.updateposplayer(&PLAYER.posplayer.x, &PLAYER.posplayer.y);
         BOMBA.lancaBomba(PLAYER.posplayer.x, PLAYER.posplayer.y, PLAYER.playerSize);
+        BOMBA.explodebomba();
         BeginDrawing();
         ClearBackground(WHITE);
         MAPA.desenhoMapa();
@@ -33,3 +34,8 @@ int main(void) {
 }
 
 
+void update(void){
+
+
+
+}

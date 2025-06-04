@@ -1,6 +1,8 @@
 #pragma once
 #include <raylib.h>
 
+
+// Classe que define as caracteristicas do jogador
 class player {
     public:
         Vector2 posplayer;
@@ -14,7 +16,7 @@ class player {
 
 
 };
-
+//Classe que define as caracteristicas do mapa
 class mapa{
     public:
         int layout[15][15] = {
@@ -41,13 +43,13 @@ class mapa{
 
 
 };
-
+// Classe que define as caracteristicas da bomba
 class bomba{
     public:
         int alcance = 1; //Alcance da bomba
         int numeroBombas = 1; //Número de bombas
         Vector2 posBomba;
-        int delaybomba = 3; //Delay da bomba em segundos
+        float delaybomba = 2.0f; //Delay da bomba em segundos
         void lancaBomba(float x, float y,float z);
         void desenhabomba(float x, float y, float z);
         void explodebomba(void);
