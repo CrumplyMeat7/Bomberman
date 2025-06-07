@@ -14,18 +14,18 @@ player::player(void) //Spawna o player na tela
     posplayer.y = 60;
 }
 
-void player::updateposplayer(float *x,float *y) // Atualiza a posição do player
+void player::updateposplayer(player * player) // Atualiza a posição do player
 {
     if(IsKeyDown(KEY_D)){
-        *x = *x + velplayer;
+        player->posplayer.x = player->posplayer.x + player->velplayer;
     }
     if(IsKeyDown(KEY_A)){
-        *x = *x - velplayer;
+        player->posplayer.x = player->posplayer.x - player->velplayer;
     }
     if(IsKeyDown(KEY_S)){
-        *y = *y + velplayer;
+        player->posplayer.y = player->posplayer.y + player->velplayer;
     }
     if(IsKeyDown(KEY_W)){
-        *y = *y - velplayer;
+        player->posplayer.y = player->posplayer.y - player->velplayer;
     }
 }

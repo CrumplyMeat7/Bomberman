@@ -18,7 +18,7 @@ int main(void) {
     {
         
         // Fazer uma função de update depois
-        PLAYER.updateposplayer(&PLAYER.posplayer.x, &PLAYER.posplayer.y);
+        PLAYER.updateposplayer(&PLAYER);
         BOMBA.lancaBomba(&PLAYER);
         BOMBA.explodebomba(&PLAYER);
         
@@ -27,8 +27,9 @@ int main(void) {
         BeginDrawing();
         ClearBackground(WHITE);
         MAPA.desenhoMapa();
-        BOMBA.desenhabomba();
+        BOMBA.desenhabomba(&PLAYER);
         PLAYER.desenhoplayer();
+        MAPA.HUD(&PLAYER);
         EndDrawing();
       
 
@@ -37,5 +38,3 @@ int main(void) {
     CloseWindow();
     return 0;
 }
-
-

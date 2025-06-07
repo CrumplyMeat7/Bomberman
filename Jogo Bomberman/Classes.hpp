@@ -10,7 +10,7 @@ class player {
         int playerSize = 40;
         float velplayer = 3;
         player(void);
-        void updateposplayer(float *x,float *y);
+        void updateposplayer(player * player);
         void bombas();
         void desenhoplayer();
         int alcance = 1; //Alcance da bomba
@@ -39,6 +39,7 @@ class mapa{
         };
         int tamanhoBloco = 60;
         void desenhoMapa(void);
+        void HUD(player * player);
 
 
 
@@ -51,8 +52,9 @@ class bomba{
         Vector2 posBomba;
         float delaybomba = 2.0f; //Delay da bomba em segundos
         void lancaBomba(player* player);
-        void desenhabomba(void);
+        void desenhabomba(player* player);
         void explodebomba(player* player);
+        Texture2D texbomba = LoadTexture("Texturas/bomba.png");
 
 };
 
