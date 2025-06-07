@@ -65,4 +65,12 @@ class powerup{
         void upgrade(void);
 };
 
+class menu{
+    public:
+        int opcaoMenu = 1;
+        int escolhaMenu = 0;
+        void desenhomenuInicial(menu * menu);
+        void escolhamenuInicial(menu * menu); 
+};
+
 

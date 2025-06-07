@@ -23,14 +23,6 @@ void mapa::desenhoMapa(void){
         }
     }
 
-
-
-
-    //HUD   
-    DrawText("Fase:",20, 910,30,BLACK);
-    DrawText("Pontuação:",200, 910, 30, BLACK);
-    DrawText("Bombas:",500, 910, 30,  BLACK);
-    DrawText("Alcance:", 700, 910, 30, BLACK);
 }
 void mapa::HUD(player * player){
     //HUD   

@@ -9,31 +9,35 @@ int main(void) {
     const int screenHeight = 960;
     InitWindow(screenWidth, screenHeight, "Mini Bomberman");
     SetTargetFPS(60);
-    
+
     player PLAYER;
     mapa MAPA;
     bomba BOMBA;
-    
+    menu MENU;
+
     while (!WindowShouldClose())
     {
-        
-        // Fazer uma função de update depois
-        PLAYER.updateposplayer(&PLAYER);
-        BOMBA.lancaBomba(&PLAYER);
-        BOMBA.explodebomba(&PLAYER);
-        
-        
-        
         BeginDrawing();
         ClearBackground(WHITE);
-        MAPA.desenhoMapa();
-        BOMBA.desenhabomba(&PLAYER);
-        PLAYER.desenhoplayer();
-        MAPA.HUD(&PLAYER);
-        EndDrawing();
-      
 
-    }  
+        if (MENU.escolhaMenu == 0) {
+            // Mostra o menu inicial
+            MENU.desenhomenuInicial(&MENU);
+            MENU.escolhamenuInicial(&MENU);
+        } else {
+            // Roda o jogo normalmente
+            PLAYER.updateposplayer(&PLAYER);
+            BOMBA.lancaBomba(&PLAYER);
+            BOMBA.explodebomba(&PLAYER);
+
+            MAPA.desenhoMapa();
+            BOMBA.desenhabomba(&PLAYER);
+            PLAYER.desenhoplayer();
+            MAPA.HUD(&PLAYER);
+        }
+
+        EndDrawing();
+    }
 
     CloseWindow();
     return 0;
