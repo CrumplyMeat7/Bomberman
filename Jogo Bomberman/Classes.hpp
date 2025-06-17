@@ -1,20 +1,27 @@
 #pragma once
 #include <raylib.h>
 
-
+class mapa;
 // Classe que define as caracteristicas do jogador
 class player {
     public:
         Vector2 posplayer;
         Texture2D texplayer;
-        int playerSize = 40;
+        //int playerSize = 40;
         float velplayer = 3;
         player(void);
-        void updateposplayer(player * player);
+        void updateposplayer(player * player, mapa* mapa);
         void bombas();
         void desenhoplayer();
         int alcance = 1; //Alcance da bomba
         int numeroBombas = 1; //Número de bombas
+//sprites
+Texture2D sprites[4][3];
+int frameAtual;
+float tempoFrame;
+float tempoAcumulado;
+int direcao; // 0=baixo, 1=esquerda, 2=direita, 3=cima
+int playerSize;
 
 };
 //Classe que define as caracteristicas do mapa

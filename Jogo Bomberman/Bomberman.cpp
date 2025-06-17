@@ -26,7 +26,7 @@ int main(void) {
             MENU.escolhamenuInicial(&MENU);
         } else {
             // Roda o jogo normalmente
-            PLAYER.updateposplayer(&PLAYER);
+            PLAYER.updateposplayer(&PLAYER, &MAPA);
             BOMBA.lancaBomba(&PLAYER);
             BOMBA.explodebomba(&PLAYER);
 
