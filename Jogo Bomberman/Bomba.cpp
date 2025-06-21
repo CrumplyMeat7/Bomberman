@@ -18,30 +18,49 @@ void bomba::lancaBomba(player * player) {
     if (IsKeyPressed(KEY_Q) && player->numeroBombas > 0) {
         player->numeroBombas--;
         BombaAtiva novaBomba;
-        novaBomba.pos = {(float)(((int)player->posplayer.x/60)*60+30), (float)(((int)player->posplayer.y/60)*60+30)}; // Posiciona a bomba no grid};
+        novaBomba.pos = {(float)(((int)(player->posplayer.x+25)/60)*60+30), (float)(((int)(player->posplayer.y+60)/60)*60+30)}; // Posiciona a bomba no grid
         novaBomba.tempoCriacao = GetTime();
         bombas.push_back(novaBomba);
     }
 }
 //Desenha a bomba e explode ela após um tempo
-void bomba::desenhabomba(player* player) {
+void bomba::desenhabomba(player* player, mapa* mapa) {
     for (auto& b : bombas) {
         if (!b.explodiu) {
 
             DrawCircleV(b.pos, 25, BROWN);
         }   
         else if (b.explosaoAtiva) {
-            for(int i = -player->alcance; i <= player->alcance; i++){
-                b.pos.x = b.pos.x + i * 60;
-                DrawCircleV(b.pos, 25, RED);
-                b.pos.x = b.pos.x - i * 60;
+            //DIREITA
+            for(int i = 0; i <= player->alcance; i++){
+                if(mapa->layout[(int)(b.pos.y / 60)][(int)((b.pos.x + i * 60) / 60)] != 0) // Verifica se é parede sólida
+                    break;
+                Vector2 temp = { b.pos.x + i * 60, b.pos.y };
+                DrawCircleV(temp, 25, RED);
                 
             }
-            for(int i = -player->alcance; i <= player->alcance; i++){
-                b.pos.y = b.pos.y + i * 60;
-                DrawCircleV(b.pos, 25, RED);
-                b.pos.y = b.pos.y - i * 60;
-            } 
+            //ESQUERDA
+            for(int i = 0; i >= -player->alcance; i--){
+                if(mapa->layout[(int)(b.pos.y / 60)][(int)((b.pos.x + i * 60) / 60)] != 0) // Verifica se é parede sólida
+                    break;
+                Vector2 temp = { b.pos.x + i * 60, b.pos.y };
+                DrawCircleV(temp, 25, RED);
+            }
+            //BAIXO
+            for(int i = 0; i <= player->alcance; i++){
+                if(mapa->layout[(int)((b.pos.y + i  * 60) / 60)][(int)(b.pos.x  / 60)] != 0) // Verifica se é parede sólida
+                    break;
+                Vector2 temp = {b.pos.x , b.pos.y + i * 60 };
+                DrawCircleV(temp, 25, RED);
+              
+            }
+            //CIMA
+            for(int i = 0; i >= -player->alcance; i--){
+               if(mapa->layout[(int)((b.pos.y + i  * 60) / 60)][(int)(b.pos.x  / 60)] != 0) // Verifica se é parede sólida
+                    break;
+                Vector2 temp = { b.pos.x , b.pos.y + i * 60 };
+                DrawCircleV(temp, 25, RED);
+            }
             if (GetTime() - b.tempoExplosao > 0.5f) { 
                 b.explosaoAtiva = false; 
             }
@@ -66,4 +85,64 @@ void bomba::explodebomba(player* player) {
         }
     }
 }
+
+void bomba::explodemapa(player* player, mapa* mapa) {
+    for (auto& b : bombas) {
+        if (b.explodiu && b.explosaoAtiva) {
+            //DIREITA
+            for(int i = 0; i <= player->alcance; i++){
+                int y = (int)(b.pos.y / 60);
+                int x = (int)((b.pos.x + i * 60) / 60);
+                if (mapa->layout[y][x] == 1) { // Parede sólida
+                    break;
+                }
+                if (mapa->layout[y][x] == 2) { // Parede quebrável
+                    mapa->layout[y][x] = 0;   // Destrói a primeira e para
+                    break;
+                }
+            }
+            //ESQUERDA
+            for(int i = 0; i >= -player->alcance; i--){
+                int y = (int)(b.pos.y / 60);
+                int x = (int)((b.pos.x + i * 60) / 60);
+                if(mapa->layout[y][x] != 0){ // Encontrou parede
+                    if (mapa->layout[y][x] == 1) { // Parede sólida
+                    break;
+                }
+                    if (mapa->layout[y][x] == 2) { // Parede quebrável
+                        mapa->layout[y][x] = 0;   // Destrói a primeira e para
+                        break;
+                }
+                }
+            }
+            //BAIXO
+            for(int i = 0; i <= player->alcance; i++){
+                int y = (int)((b.pos.y + i * 60) / 60);
+                int x = (int)(b.pos.x / 60);
+                if (mapa->layout[y][x] == 1) { // Parede sólida
+                    break;
+                }
+                if (mapa->layout[y][x] == 2) { // Parede quebrável
+                    mapa->layout[y][x] = 0;   // Destrói a primeira e para
+                    break;
+                }
+            }
+            //CIMA
+            for(int i = 0; i >= -player->alcance; i--){
+                int y = (int)((b.pos.y + i * 60) / 60);
+                int x = (int)(b.pos.x / 60);
+                if (mapa->layout[y][x] == 1) { // Parede sólida
+                    break;
+                }
+                if (mapa->layout[y][x] == 2) { // Parede quebrável
+                    mapa->layout[y][x] = 0;   // Destrói a primeira e para
+                    break;
+                }
+            }
+        }
+
+    }
+}
+
+
 

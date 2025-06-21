@@ -14,26 +14,50 @@ int main(void) {
     mapa MAPA;
     bomba BOMBA;
     menu MENU;
-
-    while (!WindowShouldClose())
+    bool jogoRodando = true;
+    while (jogoRodando &&!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(WHITE);
-
+        
         if (MENU.escolhaMenu == 0) {
             // Mostra o menu inicial
             MENU.desenhomenuInicial(&MENU);
             MENU.escolhamenuInicial(&MENU);
+            switch (MENU.escolhaMenu)  // Verifica a opção do menu
+            {
+            case 1:
+                //NOVO JOGO
+                break;
+            
+            case 2:
+                //CONTINUAR JOGO
+                break;
+            case 3:
+                //CARREGAR MAPA
+                break;
+            case 4:
+                //SAIR DO JOGO
+                jogoRodando = false;
+                break;
+            }
         } else {
-            // Roda o jogo normalmente
+            //LOGICA
+            MAPA.criaFase(&MAPA);
             PLAYER.updateposplayer(&PLAYER, &MAPA);
+            MAPA.updateMapa(&MAPA);
             BOMBA.lancaBomba(&PLAYER);
             BOMBA.explodebomba(&PLAYER);
+            BOMBA.explodemapa(&PLAYER, &MAPA);
+            MAPA.criaItens(&MAPA);
 
-            MAPA.desenhoMapa();
-            BOMBA.desenhabomba(&PLAYER);
+
+            //DESENHO
+            MAPA.desenhoMapa(&MAPA);
+            BOMBA.desenhabomba(&PLAYER, &MAPA);
             PLAYER.desenhoplayer();
             MAPA.HUD(&PLAYER);
+            MAPA.desenhaItens(&MAPA);
         }
 
         EndDrawing();
