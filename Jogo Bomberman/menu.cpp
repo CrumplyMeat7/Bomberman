@@ -24,8 +24,17 @@ void menu::desenhomenuInicial(menu * menu){
     }
     if(IsKeyPressed(KEY_ENTER)) 
        menu->escolhaMenu = menu->opcaoMenu;
-          
-    
+}
 
+void menu::gameover(menu * menu, player * player) {   
+        ClearBackground(LIGHTGRAY);
+        DrawText("Game Over", 350, 200, 40, BLACK);
+        DrawText("Pressione R para reiniciar", 250, 300, 30, BLACK);
+        
+        if (IsKeyPressed(KEY_R)) {
+            menu->escolhaMenu = 0; // Volta para o menu inicial
+            player->vivo = true; // Reseta o estado do player
 
- }
+        }
+        menu->opcaoMenu = 1; // Reseta a opção do menu  
+}

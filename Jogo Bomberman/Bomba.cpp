@@ -10,6 +10,7 @@ struct BombaAtiva {
     bool explodiu = false;
     float tempoExplosao = 0.0f; 
     bool explosaoAtiva = false;
+    int alcancebomba;
 };
 
 std::vector<BombaAtiva> bombas;
@@ -18,8 +19,9 @@ void bomba::lancaBomba(player * player) {
     if (IsKeyPressed(KEY_Q) && player->numeroBombas > 0) {
         player->numeroBombas--;
         BombaAtiva novaBomba;
-        novaBomba.pos = {(float)(((int)(player->posplayer.x+25)/60)*60+30), (float)(((int)(player->posplayer.y+60)/60)*60+30)}; // Posiciona a bomba no grid
+        novaBomba.pos = {player->poscentroplayer.x, player->poscentroplayer.y}; // Posiciona a bomba no grid
         novaBomba.tempoCriacao = GetTime();
+        novaBomba.alcancebomba = player->alcance; // Define o alcance da bomba
         bombas.push_back(novaBomba);
     }
 }
@@ -29,10 +31,9 @@ void bomba::desenhabomba(player* player, mapa* mapa) {
         if (!b.explodiu) {
 
             DrawCircleV(b.pos, 25, BROWN);
-        }   
-        else if (b.explosaoAtiva) {
+        } else if (b.explosaoAtiva) {
             //DIREITA
-            for(int i = 0; i <= player->alcance; i++){
+            for(int i = 0; i <= b.alcancebomba; i++){
                 if(mapa->layout[(int)(b.pos.y / 60)][(int)((b.pos.x + i * 60) / 60)] != 0) // Verifica se é parede sólida
                     break;
                 Vector2 temp = { b.pos.x + i * 60, b.pos.y };
@@ -40,14 +41,14 @@ void bomba::desenhabomba(player* player, mapa* mapa) {
                 
             }
             //ESQUERDA
-            for(int i = 0; i >= -player->alcance; i--){
+            for(int i = 0; i >= -b.alcancebomba; i--){
                 if(mapa->layout[(int)(b.pos.y / 60)][(int)((b.pos.x + i * 60) / 60)] != 0) // Verifica se é parede sólida
                     break;
                 Vector2 temp = { b.pos.x + i * 60, b.pos.y };
                 DrawCircleV(temp, 25, RED);
             }
             //BAIXO
-            for(int i = 0; i <= player->alcance; i++){
+            for(int i = 0; i <= b.alcancebomba; i++){
                 if(mapa->layout[(int)((b.pos.y + i  * 60) / 60)][(int)(b.pos.x  / 60)] != 0) // Verifica se é parede sólida
                     break;
                 Vector2 temp = {b.pos.x , b.pos.y + i * 60 };
@@ -55,7 +56,7 @@ void bomba::desenhabomba(player* player, mapa* mapa) {
               
             }
             //CIMA
-            for(int i = 0; i >= -player->alcance; i--){
+            for(int i = 0; i >= -b.alcancebomba; i--){
                if(mapa->layout[(int)((b.pos.y + i  * 60) / 60)][(int)(b.pos.x  / 60)] != 0) // Verifica se é parede sólida
                     break;
                 Vector2 temp = { b.pos.x , b.pos.y + i * 60 };
@@ -67,12 +68,6 @@ void bomba::desenhabomba(player* player, mapa* mapa) {
 
         }   
     }
-//Remover bombas que já explodiram e não estão mais ativas
-    bombas.erase(
-        std::remove_if(bombas.begin(), bombas.end(),
-            [](const BombaAtiva& b) { return b.explodiu && !b.explosaoAtiva; }),
-        bombas.end()
-    );
 }
 
 void bomba::explodebomba(player* player) {
@@ -90,9 +85,10 @@ void bomba::explodemapa(player* player, mapa* mapa) {
     for (auto& b : bombas) {
         if (b.explodiu && b.explosaoAtiva) {
             //DIREITA
-            for(int i = 0; i <= player->alcance; i++){
+            for(int i = 0; i <= b.alcancebomba; i++){
                 int y = (int)(b.pos.y / 60);
                 int x = (int)((b.pos.x + i * 60) / 60);
+                mapa->layoutBomba[y][x] = 1; // Marca a bomba no mapa auxiliar
                 if (mapa->layout[y][x] == 1) { // Parede sólida
                     break;
                 }
@@ -102,10 +98,10 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                 }
             }
             //ESQUERDA
-            for(int i = 0; i >= -player->alcance; i--){
+            for(int i = 0; i >= -b.alcancebomba; i--){
                 int y = (int)(b.pos.y / 60);
                 int x = (int)((b.pos.x + i * 60) / 60);
-                if(mapa->layout[y][x] != 0){ // Encontrou parede
+                mapa->layoutBomba[y][x] = 1; // Marca a bomba no mapa auxiliar
                     if (mapa->layout[y][x] == 1) { // Parede sólida
                     break;
                 }
@@ -113,12 +109,12 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                         mapa->layout[y][x] = 0;   // Destrói a primeira e para
                         break;
                 }
-                }
             }
             //BAIXO
-            for(int i = 0; i <= player->alcance; i++){
+            for(int i = 0; i <= b.alcancebomba; i++){
                 int y = (int)((b.pos.y + i * 60) / 60);
                 int x = (int)(b.pos.x / 60);
+                mapa->layoutBomba[y][x] = 1; // Marca a bomba no mapa auxiliar
                 if (mapa->layout[y][x] == 1) { // Parede sólida
                     break;
                 }
@@ -128,9 +124,10 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                 }
             }
             //CIMA
-            for(int i = 0; i >= -player->alcance; i--){
+            for(int i = 0; i >= -b.alcancebomba; i--){
                 int y = (int)((b.pos.y + i * 60) / 60);
                 int x = (int)(b.pos.x / 60);
+                mapa->layoutBomba[y][x] = 1; // Marca a bomba no mapa auxiliar
                 if (mapa->layout[y][x] == 1) { // Parede sólida
                     break;
                 }
@@ -140,9 +137,30 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                 }
             }
         }
-
+        if(b.explodiu && !b.explosaoAtiva){
+            for(int i = 0; i < 15; i++) {
+                for (int j = 0; j < 15; j++) {
+                    if (mapa->layoutBomba[i][j] == 1) {
+                        mapa->layoutBomba[i][j] = 0; // Limpa o mapa auxiliar de bombas
+                    }
+                }
+            }
+        }
     }
 }
 
+void bomba::limpaBombas() {
+    // Remove bombas que já explodiram e não estão mais ativas
+    bombas.erase(std::remove_if(bombas.begin(), bombas.end(), [](const BombaAtiva& b) {
+        return b.explodiu && !b.explosaoAtiva;
+    }), bombas.end());
+}
+
+void bomba::morteplayer(player* player, mapa* mapa) {
+    if(mapa->layoutBomba[(int)(player->poscentroplayer.y / 60)][(int)(player->poscentroplayer.x / 60)] == 1) {
+        player->posplayer = {60, 60}; // Reseta a posição do player
+        player->vivo = false; // Marca o player como morto
+    }
+}
 
 

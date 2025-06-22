@@ -14,8 +14,7 @@ int main(void) {
     mapa MAPA;
     bomba BOMBA;
     menu MENU;
-    bool jogoRodando = true;
-    while (jogoRodando &&!WindowShouldClose())
+    while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(WHITE);
@@ -27,7 +26,7 @@ int main(void) {
             switch (MENU.escolhaMenu)  // Verifica a opção do menu
             {
             case 1:
-                //NOVO JOGO
+                //NOVO JOGO 
                 break;
             
             case 2:
@@ -35,31 +34,44 @@ int main(void) {
                 break;
             case 3:
                 //CARREGAR MAPA
+                MAPA.carregaMapa(&MAPA);
                 break;
             case 4:
                 //SAIR DO JOGO
-                jogoRodando = false;
+                exit(0);
                 break;
             }
         } else {
+            //GAME OVER
+            if(!PLAYER.vivo) {
+                MENU.gameover(&MENU, &PLAYER);
+            }else{
+
             //LOGICA
-            MAPA.criaFase(&MAPA);
+            if (!MAPA.mapaPersonalizado) { // Só cria fase se não for mapa personalizado
+                MAPA.criaFase(&MAPA);
+            }
+            MAPA.criaMapaBomba(&MAPA);
             PLAYER.updateposplayer(&PLAYER, &MAPA);
-            MAPA.updateMapa(&MAPA);
+            PLAYER.updatecentroplayer();
             BOMBA.lancaBomba(&PLAYER);
             BOMBA.explodebomba(&PLAYER);
             BOMBA.explodemapa(&PLAYER, &MAPA);
+            BOMBA.limpaBombas();
             MAPA.criaItens(&MAPA);
+            MAPA.colisaoItens(&PLAYER);
+            BOMBA.morteplayer(&PLAYER, &MAPA);
 
 
             //DESENHO
             MAPA.desenhoMapa(&MAPA);
             BOMBA.desenhabomba(&PLAYER, &MAPA);
-            PLAYER.desenhoplayer();
+            
             MAPA.HUD(&PLAYER);
             MAPA.desenhaItens(&MAPA);
+            PLAYER.desenhoplayer();
+            }
         }
-
         EndDrawing();
     }
 

@@ -21,12 +21,35 @@ void mapa::desenhoMapa(mapa * mapa) {
 
 }
 
-void mapa::updateMapa(mapa * mapa){
-   
+void mapa::carregaMapa(mapa * mapa) {
+    mapa->mapaPersonalizado = true;
+    FILE *arq = fopen("mapa.txt", "r");
+    if(arq == NULL) {
+        DrawText("Erro ao carregar o mapa", 10, 10, 20, RED);
+        WindowShouldClose();
+    }
+    char linhaBuffer[17];
+    for (int linha = 0; linha < 15; linha++) {
+        if (fgets(linhaBuffer, sizeof(linhaBuffer), arq) == NULL) {
+            DrawText("Carregamento de mapa falhou", 10, 10, 20, RED);
+            fclose(arq);
+            return;
+        }
+        for (int coluna = 0; coluna < 15; coluna++) {
+            char c = linhaBuffer[coluna];
+            switch (c) {
+                case '1': mapa->layout[linha][coluna] = 1; break;
+                case '2': mapa->layout[linha][coluna] = 2; break;
+                case ' ': mapa->layout[linha][coluna] = 0; break;
+                default: mapa->layout[linha][coluna] = 0; break; // caractere estranho vazio
+            }
+        }
+    }
+    fclose(arq);
 }
 
 void mapa::criaFase(mapa * mapa) {
-   if(!faseTerminada){
+   if(!faseTerminada) { // Verifica se a fase já foi criada
         //Zera o mapa 
         int layoutInicial[15][15] = {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -59,15 +82,17 @@ void mapa::criaFase(mapa * mapa) {
                 }
             }
         }
+        //TEMPORARIO, por enquanto apenas para teste e garantir que o jogador nao fique preso em um bloco
+        mapa->layout[1][1] = 0;
+        mapa->layout[1][2] = 0;
+        mapa->layout[2][1] = 0;
+
         for (int linha = 0; linha < 15; linha++) {
             for (int coluna = 0; coluna < 15; coluna++) {
                 mapa->layoutAuxiliar[linha][coluna] = mapa->layout[linha][coluna];
             }
         }
-        //TEMPORARIO, por enquanto apenas para teste e garantir que o jogador nao fique preso em um bloco
-        mapa->layout[1][1] = 0;
-        mapa->layout[1][2] = 0;
-        mapa->layout[2][1] = 0;
+        
     }
     mapa->faseTerminada = true; // Marca a fase como criada
 }
@@ -76,6 +101,7 @@ void mapa::criaFase(mapa * mapa) {
 struct Item{
     Vector2 posItem;
     Texture2D texItem;
+    int tipoItem; // 0 = velocidade, 1 = alcance, 2 = numero de bombas
 };
 std::vector<Item> Itens;
 
@@ -85,8 +111,9 @@ void mapa::criaItens(mapa * mapa) {
             if(mapa->layout[linha][coluna] != mapa->layoutAuxiliar[linha][coluna]) {
                 mapa->layoutAuxiliar[linha][coluna] = mapa->layout[linha][coluna];
                 if (mapa->layout[linha][coluna] == 0) { // Se for um espaço vazio
-                    if (GetRandomValue(1, 10) <= 2) { // Chance de criar um item
+                    if (GetRandomValue(1, 10) <= 3) { // Chance de criar um item
                         Item novoItem;
+                        novoItem.tipoItem = GetRandomValue(0, 2); // Tipo de item aleatório (0, 1 ou 2)
                         novoItem.posItem = {static_cast<float>(coluna * tamanhoBloco + tamanhoBloco / 2), static_cast<float>(linha * tamanhoBloco + tamanhoBloco / 2)};
                         //novoItem.texItem = LoadTexture("sprites/item.png"); // Carrega a textura do item
                         Itens.push_back(novoItem);
@@ -98,11 +125,42 @@ void mapa::criaItens(mapa * mapa) {
 }
     
 void mapa::desenhaItens(mapa * mapa) {
-    for (const auto& item : Itens) {
-        DrawCircle(item.posItem.x, item.posItem.y, 20, WHITE);
+    for (auto& item : Itens) {
+        switch (item.tipoItem) {
+            case 0: // Item de velocidade
+                DrawCircle(item.posItem.x, item.posItem.y, 20, GREEN);
+                break;
+            case 1: // Item de alcance
+                DrawCircle(item.posItem.x, item.posItem.y, 20, BLUE);
+                break;
+            case 2: // Item de número de bombas
+                DrawCircle(item.posItem.x, item.posItem.y, 20, PURPLE);
+                break;
+        }
     }
 }
-   
+
+void mapa::colisaoItens(player * player) {
+    for (auto item = Itens.begin(); item != Itens.end();) {
+        if (player->poscentroplayer.x == item->posItem.x && player->poscentroplayer.y == item->posItem.y) {
+            // Colisão detectada
+            switch (item->tipoItem) {
+                case 0: // Aumenta a velocidade do jogador
+                    player->velplayer += 1.0f;
+                    break;
+                case 1: // Aumenta o alcance da bomba
+                    player->alcance++;
+                    break;
+                case 2: // Aumenta o número de bombas
+                    player->numeroBombas++;
+                    break;
+            }
+            item = Itens.erase(item); // Remove o item da lista
+        } else {
+            ++item; // Avança para o próximo item
+        }
+    }
+}
 
 void mapa::HUD(player * player){
     //HUD   
@@ -115,4 +173,15 @@ void mapa::HUD(player * player){
     //DrawText(TextFormat("%d", player->pontuacao), 300, 910, 30, BLACK);
     DrawText(TextFormat("%d", player->numeroBombas), 630, 910, 30, BLACK);
     DrawText(TextFormat("%d", player->alcance), 840, 910, 30, BLACK);
+}
+
+void mapa::criaMapaBomba(mapa * mapa) {
+    for(int linha = 0; linha < 15; linha++) {
+        for (int coluna = 0; coluna < 15; coluna++) {
+            mapa->layoutBomba[linha][coluna] = mapa->layout[linha][coluna];
+            if(mapa->layoutBomba[linha][coluna] == 2) { // Se for uma parede quebrável
+                mapa->layoutBomba[linha][coluna] = 0; // Define como espaço vazio
+            }
+        }
+    }
 }

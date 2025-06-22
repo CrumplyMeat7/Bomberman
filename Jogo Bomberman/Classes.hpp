@@ -13,14 +13,17 @@ class player {
     public:
         Vector2 posplayer;
         Texture2D texplayer;
+        Vector2 poscentroplayer;
         //int playerSize = 40;
         float velplayer;
         player(void);
         void updateposplayer(player * player, mapa* mapa);
         void bombas();
         void desenhoplayer();
+        void updatecentroplayer(void);
         int alcance = 1; //Alcance da bomba
         int numeroBombas = 1; //Número de bombas
+        bool vivo = true; //ta vivo ou nao
 //sprites
 Texture2D sprites[4][3];
 int frameAtual;
@@ -33,33 +36,21 @@ int playerSize;
 //Classe que define as caracteristicas do mapa
 class mapa{
     public:
-        int layout[15][15] = {
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-        };
+        int layout[15][15];
         int layoutAuxiliar[15][15];
+        int layoutBomba[15][15]; // Mapa auxiliar para bombas
         int tamanhoBloco = 60;
+        bool mapaPersonalizado = false; // Mapa personalizado
         Vector2 posMapa; // Posições dos blocos do mapa
         bool faseTerminada = false; // Fase terminada
         void desenhoMapa(mapa * mapa);
-        void updateMapa(mapa * mapa);
         void criaFase(mapa * mapa);
         void HUD(player * player);
         void criaItens(mapa * mapa);
         void desenhaItens(mapa * mapa);
+        void colisaoItens(player * player);
+        void carregaMapa(mapa * mapa);
+        void criaMapaBomba(mapa * mapa);
 };
 // Classe que define as caracteristicas da bomba
 class bomba{
@@ -71,15 +62,10 @@ class bomba{
         void desenhabomba(player* player,mapa* mapa);
         void explodebomba(player* player);
         void explodemapa(player* player, mapa* mapa);
+        void morteplayer(player* player, mapa* mapa);
+        void limpaBombas();
         Texture2D texbomba = LoadTexture("Texturas/bomba.png");
 
-};
-
-class powerup{
-    public:
-        Vector2 pospowerup;
-        int tipoPowerup; 
-        void upgrade(void);
 };
 
 class menu{
@@ -87,7 +73,8 @@ class menu{
         int opcaoMenu = 1;
         int escolhaMenu = 0;
         void desenhomenuInicial(menu * menu);
-        void escolhamenuInicial(menu * menu); 
+        void escolhamenuInicial(menu * menu);
+        void gameover(menu * menu, player * player);
 };
 
 class inimigo{

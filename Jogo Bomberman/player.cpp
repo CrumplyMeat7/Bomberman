@@ -130,7 +130,11 @@ void player::desenhoplayer(void) // Desenha o player na tela com sprite
     DrawText("Desenhando sprite", 10, 10, 20, GREEN);
     Texture2D tex = sprites[direcao][frameAtual];
     DrawTextureEx(tex, posplayer, 0.0f, playerSize, WHITE);
+    DrawCircleV({poscentroplayer.x, poscentroplayer.y}, 8, RED); // Desenha hitbox dos pés
 }
 
-
+void player::updatecentroplayer(void) // Atualiza a posição do centro do player
+{
+    poscentroplayer = {(float)(((int)(posplayer.x + 25) / 60) * 60 + 30), (float)(((int)(posplayer.y + 60) / 60) * 60 + 30)};
+}
 
