@@ -198,6 +198,8 @@ void mapa::colisaoSaida(player * player,mapa * mapa) {
             mapa->faseTerminada = false; // Marca a fase como terminada
             mapa->FaseAtual++; // Avança para a próxima fase
             player->posplayer = {60, 60}; // Reseta a posição do jogador
+            saida.saidaAchada = false; // Reseta a saída
+            Itens.clear(); // Limpa os itens da fase anterior
         }
     }
 }

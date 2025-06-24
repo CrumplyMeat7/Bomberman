@@ -16,7 +16,7 @@ class player {
         Vector2 poscentroplayer;
         //int playerSize = 40;
         float velplayer;
-        int alcance = 3; //Alcance da bomba
+        int alcance = 1; //Alcance da bomba
         int numeroBombas = 1; //Número de bombas
         bool vivo = true; //ta vivo ou nao
         int pontos = 0; //Pontos do jogador
