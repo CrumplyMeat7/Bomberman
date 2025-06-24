@@ -4,6 +4,7 @@
 #include "Classes.hpp"
 #include <math.h>
 
+void ResetarJogo(player * player, mapa * mapa);
 int main(void) {
     const int screenWidth = 900;
     const int screenHeight = 960;
@@ -14,23 +15,30 @@ int main(void) {
     mapa MAPA;
     bomba BOMBA;
     menu MENU;
+    inimigo INIMIGO;
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(WHITE);
         
         if (MENU.escolhaMenu == 0) {
+            MENU.escolhaGameover = 0; // Reseta a escolha do game over
             // Mostra o menu inicial
             MENU.desenhomenuInicial(&MENU);
             MENU.escolhamenuInicial(&MENU);
             switch (MENU.escolhaMenu)  // Verifica a opção do menu
             {
             case 1:
-                //NOVO JOGO 
+                //NOVO JOGO
+                ResetarJogo(&PLAYER, &MAPA); // Reseta o jogo
+                FILE *arq;
+                arq = fopen("save.txt", "w");
+                fclose(arq);
                 break;
             
             case 2:
                 //CONTINUAR JOGO
+                MENU.loadJogo(&PLAYER, &MAPA);
                 break;
             case 3:
                 //CARREGAR MAPA
@@ -50,6 +58,8 @@ int main(void) {
                 {
                     case 1:
                         //TENTAR NOVAMENTE
+                        PLAYER.vivo = true; // Reseta o estado do player
+                        MAPA.faseTerminada = false; // Reseta a fase terminada
                         break;
                     case 2:
                         //SALVAR E SAIR
@@ -62,12 +72,18 @@ int main(void) {
             }else{
 
             //LOGICA
-            if (!MAPA.mapaPersonalizado) { // Só cria fase se não for mapa personalizado
+            if (!MAPA.mapaPersonalizado && !MAPA.faseTerminada) { // Só cria fase se não for mapa personalizado
+                MENU.escolhaGameover = 0; // Reseta a escolha do game over
                 MAPA.criaFase(&MAPA);
+                INIMIGO.spawnInimigo(&MAPA);
+                PLAYER.pontosAuxiliar = PLAYER.pontos; // Salva os pontos do jogador antes de iniciar a fase
+                PLAYER.vitoria = false; // Reseta a vitória do jogador
             }
             MAPA.criaMapaBomba(&MAPA);
             PLAYER.updateposplayer(&PLAYER, &MAPA);
             PLAYER.updatecentroplayer();
+            INIMIGO.moveInimigo(&PLAYER, &MAPA);
+            INIMIGO.updatecentroInimigo(&INIMIGO);
             BOMBA.lancaBomba(&PLAYER);
             BOMBA.explodebomba(&PLAYER);
             BOMBA.explodemapa(&PLAYER, &MAPA);
@@ -76,6 +92,10 @@ int main(void) {
             MAPA.colisaoItens(&PLAYER);
             MAPA.colisaoSaida(&PLAYER, &MAPA);
             BOMBA.morteplayer(&PLAYER, &MAPA);
+            INIMIGO.morteinimigo(&INIMIGO, &MAPA);
+            if(PLAYER.vitoria){
+                MENU.saveJogo(&PLAYER, &MAPA);
+            }
 
 
             //DESENHO
@@ -85,7 +105,9 @@ int main(void) {
             MAPA.HUD(&PLAYER, &MAPA);
             MAPA.desenhaItens(&MAPA);
             PLAYER.desenhoplayer();
+            INIMIGO.desenhaInimigo();
             MAPA.desenhaSaida(&MAPA);
+
             }
         }
         EndDrawing();
@@ -93,4 +115,17 @@ int main(void) {
 
     CloseWindow();
     return 0;
+}
+
+void ResetarJogo(player * player, mapa * mapa) {
+    player->posplayer = {60, 60}; // Reseta a posição do jogador
+    player->vivo = true; // Reseta o estado do jogador
+    player->pontos = 0; // Reseta os pontos do jogador
+    mapa->FaseAtual = 1; // Reseta a fase atual
+    mapa->faseTerminada = false; // Reseta a fase terminada
+    mapa->mapaPersonalizado = false; // Reseta o mapa personalizado
+    player->numeroBombas = 1; // Reseta o número de bombas do jogador
+    player->numeroBombasTotal = 1; // Reseta o número total de bombas do jogador
+    player->alcance = 1; // Reseta o alcance da bomba do jogador
+    player->velplayer = 2.0f; // Reseta a velocidade do jogador
 }

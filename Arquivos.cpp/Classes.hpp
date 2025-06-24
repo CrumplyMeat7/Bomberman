@@ -8,6 +8,7 @@
 #include <iostream> 
 
 class mapa;
+class inimigo;
 // Classe que define as caracteristicas do jogador
 class player {
     public:
@@ -18,10 +19,12 @@ class player {
         float velplayer;
         int alcance = 1; //Alcance da bomba
         int numeroBombas = 1; //Número de bombas
+        int numeroBombasTotal = 1; //Número total de bombas que o jogador pode carregar
         bool vivo = true; //ta vivo ou nao
         int pontos = 0; //Pontos do jogador
+        int pontosAuxiliar = 0; //Pontos do jogador auxiliar
+        bool vitoria = false; //Vitoria ou nao
         void updateposplayer(player * player, mapa* mapa);
-        void bombas();
         void desenhoplayer();
         void updatecentroplayer(void);
         player(void);
@@ -68,6 +71,7 @@ class bomba{
         void explodemapa(player* player, mapa* mapa);
         void morteplayer(player* player, mapa* mapa);
         void limpaBombas();
+        
         Texture2D texbomba = LoadTexture("Texturas/bomba.png");
 
 };
@@ -82,13 +86,16 @@ class menu{
         void escolhamenuInicial(menu * menu);
         void gameover(menu * menu, player * player);
         void escolhagameover(menu * menu);
+        void saveJogo(player * player, mapa * mapa);
+        void loadJogo(player * player, mapa * mapa);
 };
 
-class inimigo{
-    public:
-        Vector2 posinimigo;
-        float velocidadeInimigo = 1.5f; //Velocidade do inimigo
-        void perseguir(player* jogador, inimigo* inimigo);
-        void desenhoInimigo(inimigo* inimigo);
-};
+class inimigo {
+public:
+    void spawnInimigo(mapa * mapa);
+    void desenhaInimigo();
+    void moveInimigo(player * player, mapa * mapa);
+    void updatecentroInimigo(inimigo * inimigo);
+    void morteinimigo(inimigo * inimigo, mapa* mapa);
 
+};

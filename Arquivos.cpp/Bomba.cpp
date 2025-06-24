@@ -1,8 +1,5 @@
 #include "Classes.hpp"
-#include <raylib.h>
-#include <vector>
-#include <math.h>
-#include <algorithm>
+
 
 struct BombaAtiva {
     Vector2 pos;
@@ -171,6 +168,11 @@ void bomba::morteplayer(player* player, mapa* mapa) {
         player->posplayer = {60, 60}; // Reseta a posição do player
         player->vivo = false; // Marca o player como morto
     }
+}
+
+void bombasMorte(player* player, mapa* mapa) {
+    bombas.clear(); // Limpa todas as bombas ativas
+    
 }
 
 

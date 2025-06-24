@@ -131,7 +131,7 @@ void mapa::criaItens(mapa * mapa) {
             if(mapa->layout[linha][coluna] != mapa->layoutAuxiliar[linha][coluna]) {
                 mapa->layoutAuxiliar[linha][coluna] = mapa->layout[linha][coluna];
                 if (mapa->layout[linha][coluna] == 0) { // Se for um espaço vazio
-                    if((GetRandomValue(1,100) <= 5 && !saida.saidaAchada) || chegaNumeroBlocos(mapa) == 0) { // Chance de criar a saída ou se não houver blocos quebráveis
+                    if((GetRandomValue(1,100) <= 5  || chegaNumeroBlocos(mapa) == 0) && !saida.saidaAchada) { // Chance de criar a saída ou se não houver blocos quebráveis
                         saida.posSaida = {(float)(coluna * tamanhoBloco + tamanhoBloco / 2),(float)(linha * tamanhoBloco + tamanhoBloco / 2)};
                         saida.saidaAchada = true; // Marca que a saída foi encontrada
 
@@ -170,12 +170,13 @@ void mapa::colisaoItens(player * player) {
             // Colisão detectada
             switch (item->tipoItem) {
                 case 0: // Aumenta a velocidade do jogador
-                    player->velplayer += 1.0f;
+                    player->velplayer += 0.5f;
                     break;
                 case 1: // Aumenta o alcance da bomba
                     player->alcance++;
                     break;
                 case 2: // Aumenta o número de bombas
+                    player->numeroBombasTotal++;
                     player->numeroBombas++;
                     break;
             }
@@ -201,6 +202,7 @@ void mapa::colisaoSaida(player * player,mapa * mapa) {
             saida.saidaAchada = false; // Reseta a saída
             Itens.clear(); // Limpa os itens da fase anterior
             player->pontos += 500; // Adiciona pontos ao jogador por completar a fase
+            player->vitoria = true; // Marca que o jogador venceu a fase
         }
     }
 }
@@ -215,7 +217,7 @@ void mapa::HUD(player * player, mapa * mapa) {
     
     DrawText(TextFormat("%d", mapa->FaseAtual), 120, 910, 30, BLACK);
     DrawText(TextFormat("%d", player->pontos), 400, 910, 30, BLACK);
-    DrawText(TextFormat("%d", player->numeroBombas), 630, 910, 30, BLACK);
+    DrawText(TextFormat("%d/%d", player->numeroBombas, player->numeroBombasTotal), 630, 910, 30, BLACK);
     DrawText(TextFormat("%d", player->alcance), 840, 910, 30, BLACK);
 }
 
@@ -225,6 +227,9 @@ void mapa::criaMapaBomba(mapa * mapa) {
             mapa->layoutBomba[linha][coluna] = mapa->layout[linha][coluna];
             if(mapa->layoutBomba[linha][coluna] == 2) { // Se for uma parede quebrável
                 mapa->layoutBomba[linha][coluna] = 0; // Define como espaço vazio
+            }
+            if(mapa->layoutBomba[linha][coluna] == 1) { 
+                mapa->layoutBomba[linha][coluna] = 2; 
             }
         }
     }

@@ -48,3 +48,19 @@ void menu::escolhagameover(menu * menu){
     if(IsKeyPressed(KEY_ENTER)) 
        menu->escolhaGameover = menu->opcaoGameover;
 }
+
+void menu::saveJogo(player * player, mapa * mapa) {
+    FILE *arq = fopen("save.txt", "w");
+    if (arq != NULL) {
+        fprintf(arq, "%d %d  %d %f %d\n", player->pontos, player->alcance, player->numeroBombasTotal, player->velplayer, mapa->FaseAtual);
+        fclose(arq);
+    }
+}
+
+void menu::loadJogo(player * player, mapa * mapa) {
+    FILE *arq = fopen("save.txt", "r");
+    if (arq != NULL) {
+        fscanf(arq, "%d %d %d %f %d", &player->pontos, &player->alcance, &player->numeroBombasTotal, &player->velplayer, &mapa->FaseAtual);
+        fclose(arq);
+    } 
+}
