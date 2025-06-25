@@ -22,7 +22,7 @@ int main(void) {
         ClearBackground(WHITE);
         
         if (MENU.escolhaMenu == 0) {
-            MENU.escolhaGameover = 0; // Reseta a escolha do game over
+            
             // Mostra o menu inicial
             MENU.desenhomenuInicial(&MENU);
             MENU.escolhamenuInicial(&MENU);
@@ -52,6 +52,7 @@ int main(void) {
         } else {
             //GAME OVER
             if(!PLAYER.vivo) {
+                MENU.escolhaGameover = 0; // Reseta a escolha do game over
                 MENU.gameover(&MENU, &PLAYER);
                 MENU.escolhagameover(&MENU);
                 switch (MENU.escolhaGameover)  // Verifica a opção do menu
@@ -73,7 +74,6 @@ int main(void) {
 
             //LOGICA
             if (!MAPA.mapaPersonalizado && !MAPA.faseTerminada) { // Só cria fase se não for mapa personalizado
-                MENU.escolhaGameover = 0; // Reseta a escolha do game over
                 MAPA.criaFase(&MAPA);
                 INIMIGO.spawnInimigo(&MAPA);
                 PLAYER.pontosAuxiliar = PLAYER.pontos; // Salva os pontos do jogador antes de iniciar a fase
@@ -87,6 +87,8 @@ int main(void) {
             BOMBA.lancaBomba(&PLAYER);
             BOMBA.explodebomba(&PLAYER);
             BOMBA.explodemapa(&PLAYER, &MAPA);
+            BOMBA.explosaoCadeia(&MAPA);
+            BOMBA.destroiMapa(&BOMBA, &MAPA);
             BOMBA.limpaBombas();
             MAPA.criaItens(&MAPA);
             MAPA.colisaoItens(&PLAYER);
@@ -95,6 +97,12 @@ int main(void) {
             INIMIGO.morteinimigo(&INIMIGO, &MAPA);
             if(PLAYER.vitoria){
                 MENU.saveJogo(&PLAYER, &MAPA);
+            }
+            //RESETA CASO O JOGADOR MORRA
+            if (!PLAYER.vivo) {
+                MAPA.mapaMorte(&MAPA); // Reseta o mapa se o jogador morrer
+                PLAYER.playerMorte(&PLAYER); // Reseta o jogador se ele morrer
+                BOMBA.bombasMorte(&PLAYER, &MAPA); // Reseta as bombas
             }
 
 

@@ -19,7 +19,7 @@ class player {
         float velplayer;
         int alcance = 1; //Alcance da bomba
         int numeroBombas = 1; //Número de bombas
-        int numeroBombasTotal = 1; //Número total de bombas que o jogador pode carregar
+        int numeroBombasTotal = numeroBombas; //Número total de bombas que o jogador pode carregar
         bool vivo = true; //ta vivo ou nao
         int pontos = 0; //Pontos do jogador
         int pontosAuxiliar = 0; //Pontos do jogador auxiliar
@@ -28,6 +28,7 @@ class player {
         void desenhoplayer();
         void updatecentroplayer(void);
         player(void);
+        void playerMorte(player* player);
 //sprites
 Texture2D sprites[4][3];
 int frameAtual;
@@ -43,6 +44,7 @@ class mapa{
         int layout[15][15];
         int layoutAuxiliar[15][15];
         int layoutBomba[15][15]; // Mapa auxiliar para bombas
+        int layoutDestruir[15][15] = {0};
         int tamanhoBloco = 60;
         int FaseAtual = 1; // Fase atual
         bool mapaPersonalizado = false; // Mapa personalizado
@@ -58,6 +60,7 @@ class mapa{
         void criaMapaBomba(mapa * mapa);
         void desenhaSaida(mapa * mapa);
         void colisaoSaida(player * player,mapa * mapa);
+        void mapaMorte(mapa* mapa);
 };
 // Classe que define as caracteristicas da bomba
 class bomba{
@@ -71,7 +74,10 @@ class bomba{
         void explodemapa(player* player, mapa* mapa);
         void morteplayer(player* player, mapa* mapa);
         void limpaBombas();
-        
+        void bombasMorte(player* player, mapa* mapa);
+        void explosaoCadeia(mapa* mapa);
+        void destroiMapa(bomba* bomba, mapa* mapa);
+
         Texture2D texbomba = LoadTexture("Texturas/bomba.png");
 
 };

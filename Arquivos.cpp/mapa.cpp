@@ -131,12 +131,12 @@ void mapa::criaItens(mapa * mapa) {
             if(mapa->layout[linha][coluna] != mapa->layoutAuxiliar[linha][coluna]) {
                 mapa->layoutAuxiliar[linha][coluna] = mapa->layout[linha][coluna];
                 if (mapa->layout[linha][coluna] == 0) { // Se for um espaço vazio
-                    if((GetRandomValue(1,100) <= 5  || chegaNumeroBlocos(mapa) == 0) && !saida.saidaAchada) { // Chance de criar a saída ou se não houver blocos quebráveis
+                    if((GetRandomValue(1,100) <= 7  || chegaNumeroBlocos(mapa) == 0) && !saida.saidaAchada) { // Chance de criar a saída ou se não houver blocos quebráveis
                         saida.posSaida = {(float)(coluna * tamanhoBloco + tamanhoBloco / 2),(float)(linha * tamanhoBloco + tamanhoBloco / 2)};
                         saida.saidaAchada = true; // Marca que a saída foi encontrada
 
                     }
-                    else if (GetRandomValue(1, 100) <= 4) { // Chance de criar um item
+                    else if (GetRandomValue(1, 100) <= 6) { // Chance de criar um item
                         Item novoItem;
                         novoItem.tipoItem = GetRandomValue(0, 2); // Tipo de item aleatório (0, 1 ou 2)
                         novoItem.posItem = {static_cast<float>(coluna * tamanhoBloco + tamanhoBloco / 2), static_cast<float>(linha * tamanhoBloco + tamanhoBloco / 2)};
@@ -191,8 +191,14 @@ void mapa::desenhaSaida(mapa * mapa) {
     if (saida.saidaAchada) {
         DrawCircle(saida.posSaida.x, saida.posSaida.y, 20, BLACK);
     }
+    for (int linha = 0; linha < 15; linha++) {
+            for (int coluna = 0; coluna < 15; coluna++) {
+                if(mapa->layoutBomba[linha][coluna] == 1) { // Se for uma bomba
+                    DrawCircle((coluna * tamanhoBloco + tamanhoBloco / 2), (linha * tamanhoBloco + tamanhoBloco / 2), 10, YELLOW); // Desenha a bomba
+                }
+            }
+        }
 }
-
 void mapa::colisaoSaida(player * player,mapa * mapa) {
     if (saida.saidaAchada ) {
         if (player->poscentroplayer.x == saida.posSaida.x && player->poscentroplayer.y == saida.posSaida.y) {
@@ -233,4 +239,22 @@ void mapa::criaMapaBomba(mapa * mapa) {
             }
         }
     }
+}
+
+void mapa::mapaMorte(mapa* mapa) {
+    for(int linha = 0; linha < 15; linha++) {
+        for (int coluna = 0; coluna < 15; coluna++) {
+            mapa->layoutBomba[linha][coluna] = mapa->layout[linha][coluna];
+            if(mapa->layoutBomba[linha][coluna] == 2) { // Se for uma parede quebrável
+                mapa->layoutBomba[linha][coluna] = 0; // Define como espaço vazio
+            }
+            if(mapa->layoutBomba[linha][coluna] == 1) {
+                mapa->layoutBomba[linha][coluna] = 0; 
+            }
+        }
+    }
+    Itens.clear(); // Limpa os itens do mapa
+    saida.saidaAchada = false; // Reseta a saída
+    mapa->faseTerminada = false; // Reseta a fase terminada
+    mapa->mapaPersonalizado = false; // Reseta o mapa personalizado
 }

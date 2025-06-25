@@ -138,3 +138,11 @@ void player::updatecentroplayer(void) // Atualiza a posição do centro do playe
     poscentroplayer = {(float)(((int)(posplayer.x + 25) / 60) * 60 + 30), (float)(((int)(posplayer.y + 60) / 60) * 60 + 30)};
 }
 
+void player::playerMorte(player* player){
+    player->pontos = player->pontosAuxiliar; // Reseta os pontos do jogador
+    player->posplayer = {60, 60}; // Reseta a posição do jogador
+    player->numeroBombas = 1; // Reseta o número de bombas do jogador
+    player->numeroBombasTotal = 1; // Reseta o número total de bombas do jogador
+    player->alcance = 1; // Reseta o alcance da bomba do jogador
+    player->velplayer = 2.0f; // Reseta a velocidade do jogador
+}
