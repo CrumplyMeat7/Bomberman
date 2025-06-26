@@ -222,7 +222,7 @@ void mapa::criaItens(mapa * mapa) {
                         saida.saidaAchada = true; // Marca que a saída foi encontrada
 
                     }
-                    else if (GetRandomValue(1, 100) <= 10) { // Chance de criar um item
+                    else if (GetRandomValue(1, 100) <= 15) { // Chance de criar um item
                         Item novoItem;
                         novoItem.tipoItem = GetRandomValue(0, 3); // Tipo de item aleatório (0, 1, 2 ou 3)
                         novoItem.posItem = {static_cast<float>(coluna * tamanhoBloco + tamanhoBloco / 2), static_cast<float>(linha * tamanhoBloco + tamanhoBloco / 2)};

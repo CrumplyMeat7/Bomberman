@@ -38,6 +38,7 @@ int main(void) {
                     arq = fopen("save.txt", "w");
                     fclose(arq);
                     ResetarJogo(&PLAYER, &MAPA); // Reseta o jogo
+                    MAPA.faseAtual = 4; // Reseta a fase atual
                     inimigos.clear();
                     break;
 
@@ -57,7 +58,17 @@ int main(void) {
                     exit(0);
                     break;
             }
-        } else {
+        }else if(MAPA.faseAtual == 5){
+            ClearBackground(LIGHTGRAY);
+            DrawText("Parabens, voce venceu!", 250, 200, 40, BLACK);
+            DrawText("Pressione R para reiniciar o jogo", 200, 300, 20, BLACK);
+            if (IsKeyPressed(KEY_R)) {
+                ResetarJogo(&PLAYER, &MAPA); // Reseta o jogo
+                inimigos.clear();
+            }
+
+
+        }else{
             if(!PLAYER.vivo) {
                 MENU.escolhaGameover = 0; // Reseta a escolha do game over
                 MENU.gameover(&MENU, &PLAYER);

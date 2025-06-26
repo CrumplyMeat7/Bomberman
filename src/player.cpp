@@ -162,4 +162,5 @@ void player::playerMorte(player* player){
     player->numeroBombasTotal = 1; // Reseta o número total de bombas do jogador
     player->alcance = 1; // Reseta o alcance da bomba do jogador
     player->velplayer = 2.0f; // Reseta a velocidade do jogador
+    player->bombaRemota = false; // Reseta a bomba remota do jogador
 }
