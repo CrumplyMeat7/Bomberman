@@ -21,30 +21,38 @@ void mapa::desenhoMapa(mapa * mapa) {
 
 }
 
-void mapa::carregaMapa(mapa * mapa) {
-    mapa->mapaPersonalizado = true;
-    FILE *arq = fopen("mapa.txt", "r");
-    if(arq == NULL) {
-        DrawText("Erro ao carregar o mapa", 10, 10, 20, RED);
-        WindowShouldClose();
-    }
-    char linhaBuffer[17];
-    for (int linha = 0; linha < 15; linha++) {
-        if (fgets(linhaBuffer, sizeof(linhaBuffer), arq) == NULL) {
-            DrawText("Carregamento de mapa falhou", 10, 10, 20, RED);
-            fclose(arq);
-            return;
-        }
+void mapa::carregaMapa(mapa *mapa) {
+   
+    mapa->mapaPersonalizado = true; // Marca que o mapa é personalizado
+    FILE* arq = fopen("mapa.txt", "r");
+    if (!arq) 
+        printf("Erro ao abrir o arquivo 'mapa.txt'\n");
+    char linha[64];
+    int linhaMapa = 0;
+
+    while (fgets(linha, sizeof(linha), arq) && linhaMapa < 15) {
+        // Ignora comentários
+        if (linha[0] == '#') continue;
+
+        // Remove \n
+        linha[strcspn(linha, "\n")] = 0;
+
         for (int coluna = 0; coluna < 15; coluna++) {
-            char c = linhaBuffer[coluna];
-            switch (c) {
-                case '1': mapa->layout[linha][coluna] = 1; break;
-                case '2': mapa->layout[linha][coluna] = 2; break;
-                case ' ': mapa->layout[linha][coluna] = 0; break;
-                default: mapa->layout[linha][coluna] = 0; break; // caractere estranho vazio
-            }
+            char c = linha[coluna];
+
+            if (c == '1') layout[linhaMapa][coluna] = 1;         // Parede sólida
+            else if (c == '2') layout[linhaMapa][coluna] = 2;    // Parede quebrável
+            else layout[linhaMapa][coluna] = 0;                  // Espaço livre (ou outro caractere)
         }
+
+        linhaMapa++;
     }
+    for (int linha = 0; linha < 15; linha++) {
+        for (int coluna = 0; coluna < 15; coluna++) {
+            mapa->layoutAuxiliar[linha][coluna] = mapa->layout[linha][coluna];
+        }
+    }   
+    
     fclose(arq);
 }
 
@@ -191,13 +199,6 @@ void mapa::desenhaSaida(mapa * mapa) {
     if (saida.saidaAchada) {
         DrawCircle(saida.posSaida.x, saida.posSaida.y, 20, BLACK);
     }
-    for (int linha = 0; linha < 15; linha++) {
-            for (int coluna = 0; coluna < 15; coluna++) {
-                if(mapa->layoutBomba[linha][coluna] == 1) { // Se for uma bomba
-                    DrawCircle((coluna * tamanhoBloco + tamanhoBloco / 2), (linha * tamanhoBloco + tamanhoBloco / 2), 10, YELLOW); // Desenha a bomba
-                }
-            }
-        }
 }
 void mapa::colisaoSaida(player * player,mapa * mapa) {
     if (saida.saidaAchada ) {

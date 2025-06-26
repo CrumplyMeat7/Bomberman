@@ -15,7 +15,6 @@ int main(void) {
     mapa MAPA;
     bomba BOMBA;
     menu MENU;
-    inimigo INIMIGO;
     while (!WindowShouldClose())
     {
         BeginDrawing();
@@ -30,7 +29,7 @@ int main(void) {
             {
             case 1:
                 //NOVO JOGO
-                ResetarJogo(&PLAYER, &MAPA); // Reseta o jogo
+                //ResetarJogo(&PLAYER, &MAPA); // Reseta o jogo
                 FILE *arq;
                 arq = fopen("save.txt", "w");
                 fclose(arq);
@@ -75,15 +74,12 @@ int main(void) {
             //LOGICA
             if (!MAPA.mapaPersonalizado && !MAPA.faseTerminada) { // Só cria fase se não for mapa personalizado
                 MAPA.criaFase(&MAPA);
-                INIMIGO.spawnInimigo(&MAPA);
                 PLAYER.pontosAuxiliar = PLAYER.pontos; // Salva os pontos do jogador antes de iniciar a fase
                 PLAYER.vitoria = false; // Reseta a vitória do jogador
             }
             MAPA.criaMapaBomba(&MAPA);
             PLAYER.updateposplayer(&PLAYER, &MAPA);
             PLAYER.updatecentroplayer();
-            INIMIGO.moveInimigo(&PLAYER, &MAPA);
-            INIMIGO.updatecentroInimigo(&INIMIGO);
             BOMBA.lancaBomba(&PLAYER);
             BOMBA.explodebomba(&PLAYER);
             BOMBA.explodemapa(&PLAYER, &MAPA);
@@ -94,7 +90,6 @@ int main(void) {
             MAPA.colisaoItens(&PLAYER);
             MAPA.colisaoSaida(&PLAYER, &MAPA);
             BOMBA.morteplayer(&PLAYER, &MAPA);
-            INIMIGO.morteinimigo(&INIMIGO, &MAPA);
             if(PLAYER.vitoria){
                 MENU.saveJogo(&PLAYER, &MAPA);
             }
@@ -113,7 +108,6 @@ int main(void) {
             MAPA.HUD(&PLAYER, &MAPA);
             MAPA.desenhaItens(&MAPA);
             PLAYER.desenhoplayer();
-            INIMIGO.desenhaInimigo();
             MAPA.desenhaSaida(&MAPA);
 
             }

@@ -9,6 +9,7 @@
 
 class mapa;
 class inimigo;
+class menu;
 // Classe que define as caracteristicas do jogador
 class player {
     public:

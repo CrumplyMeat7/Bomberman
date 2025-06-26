@@ -93,7 +93,7 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                 }
                 if (mapa->layout[y][x] == 2 && b.encontrouParede.x == 0) { // Parede quebrável
                     mapa->layoutDestruir[y][x] = 1;   // Destrói a primeira e para
-                    b.encontrouParede.x = i; // Marca que encontrou parede na direção direita
+                    b.encontrouParede.x = 1;
                     player->pontos += 5; // Adiciona pontos ao jogador
                     break;
                 }
@@ -109,7 +109,7 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                 }
                 if (mapa->layout[y][x] == 2 && b.encontrouParede.y == 0) { // Parede quebrável
                     mapa->layoutDestruir[y][x] = 1;   // Destrói a primeira e para
-                    b.encontrouParede.y = 1; // Marca que encontrou parede na direção esquerda
+                    b.encontrouParede.y = 1;
                     player->pontos += 5; // Adiciona pontos ao jogador
                     break;
                 }
@@ -125,7 +125,7 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                 }
                 if (mapa->layout[y][x] == 2 && b.encontrouParede.z == 0) { // Parede quebrável
                     mapa->layoutDestruir[y][x] = 1;   // Destrói a primeira e para
-                    b.encontrouParede.z = 1; // Marca que encontrou parede na direção baixo
+                    b.encontrouParede.z = 1;
                     player->pontos += 5; // Adiciona pontos ao jogador
                     break;
                 }
@@ -141,7 +141,7 @@ void bomba::explodemapa(player* player, mapa* mapa) {
                 }
                 if (mapa->layout[y][x] == 2 && b.encontrouParede.w == 0) { // Parede quebrável
                     mapa->layoutDestruir[y][x] = 1;   // Destrói a primeira e para
-                    b.encontrouParede.w = 1; // Marca que encontrou parede na direção cima
+                    b.encontrouParede.w = 1;
                     player->pontos += 5; // Adiciona pontos ao jogador
                     break;
                 }
