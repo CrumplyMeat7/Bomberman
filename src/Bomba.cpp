@@ -114,7 +114,7 @@ if (b.podeAtravessar) {
 
 void bomba::explodebomba(player* player) {
     for (auto& b : bombas) {
-         if(!b.explodiu && (GetTime() - b.tempoCriacao > delaybomba)){
+         if(!b.explodiu && (GetTime() - b.tempoCriacao > delaybomba) && !player->bombaRemota) {
             b.explodiu = true;
             player->numeroBombas++;
             b.tempoExplosao = GetTime();
@@ -265,6 +265,17 @@ void bomba::destroiMapa(bomba* bomba, mapa* mapa) {
     }
 }
 
-
+void bomba::explosaoRemota(player* player, mapa* mapa){
+    if (IsKeyPressed(KEY_E) && player->bombaRemota) {
+        for (auto& b : bombas) {
+            if (!b.explodiu) {
+               b.explodiu = true;
+                player->numeroBombas++;
+                b.tempoExplosao = GetTime();
+                b.explosaoAtiva = true;
+            }
+        }
+    }
+}
 
 

@@ -23,7 +23,6 @@ int main(void) {
     bomba BOMBA;
     menu MENU;
 
-    bool jogoIniciado = false;
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -40,15 +39,12 @@ int main(void) {
                     fclose(arq);
                     ResetarJogo(&PLAYER, &MAPA); // Reseta o jogo
                     inimigos.clear();
-                    jogoIniciado = true;
                     break;
 
                 case 2: // CONTINUAR
-                    if (!jogoIniciado) {
-                        MENU.loadJogo(&PLAYER, &MAPA);
-                        inimigos.clear();
-                        jogoIniciado = true;
-                    }
+                    MENU.loadJogo(&PLAYER, &MAPA);
+                    inimigos.clear();
+                    
                     break;
 
                 case 3: // CARREGAR MAPA
@@ -86,6 +82,7 @@ int main(void) {
                 if (!MAPA.mapaPersonalizado && !MAPA.faseTerminada){
                     gerarInimigos(&MAPA, &PLAYER);
                     MAPA.criaFase(&MAPA);
+                    PLAYER.numeroBombas = PLAYER.numeroBombasTotal; // Reseta o número de bombas do jogador
                     PLAYER.pontosAuxiliar = PLAYER.pontos; // Salva os pontos do jogador antes de iniciar a fase
                     PLAYER.vitoria = false; // Reseta a vitória do jogador
                 }
@@ -97,6 +94,7 @@ int main(void) {
                 BOMBA.explodebomba(&PLAYER);
                 BOMBA.explodemapa(&PLAYER, &MAPA);
                 BOMBA.explosaoCadeia(&MAPA);
+                BOMBA.explosaoRemota(&PLAYER, &MAPA);
                 BOMBA.destroiMapa(&BOMBA, &MAPA);
                 
                 BOMBA.limpaBombas();
@@ -134,6 +132,7 @@ int main(void) {
 void ResetarJogo(player * player, mapa * mapa) {
     player->posplayer = {60, 60}; // Reseta a posição do jogador
     player->vivo = true; // Reseta o estado do jogador
+    player->bombaRemota = false;
     mapa->faseAtual = 1; // Reseta a fase atual
     player->pontos = 0; // Reseta os pontos do jogador
     mapa->faseTerminada = false; // Reseta a fase terminada

@@ -187,7 +187,7 @@ switch (faseAtual) {
 struct Item{
     Vector2 posItem;
     Texture2D texItem;
-    int tipoItem; // 0 = velocidade, 1 = alcance, 2 = numero de bombas
+    int tipoItem; // 0 = velocidade, 1 = alcance, 2 = numero de bombas, 3 = bomba remota
 };
 std::vector<Item> Itens;
 
@@ -217,14 +217,14 @@ void mapa::criaItens(mapa * mapa) {
             if(mapa->layout[linha][coluna] != mapa->layoutAuxiliar[linha][coluna]) {
                 mapa->layoutAuxiliar[linha][coluna] = mapa->layout[linha][coluna];
                 if (mapa->layout[linha][coluna] == 0) { // Se for um espaço vazio
-                    if((GetRandomValue(1,100) <= 7  || chegaNumeroBlocos(mapa) == 0) && !saida.saidaAchada) { // Chance de criar a saída ou se não houver blocos quebráveis
+                    if((GetRandomValue(1,100) <= 4  || chegaNumeroBlocos(mapa) == 0) && !saida.saidaAchada) { // Chance de criar a saída ou se não houver blocos quebráveis
                         saida.posSaida = {(float)(coluna * tamanhoBloco + tamanhoBloco / 2),(float)(linha * tamanhoBloco + tamanhoBloco / 2)};
                         saida.saidaAchada = true; // Marca que a saída foi encontrada
 
                     }
-                    else if (GetRandomValue(1, 100) <= 6) { // Chance de criar um item
+                    else if (GetRandomValue(1, 100) <= 10) { // Chance de criar um item
                         Item novoItem;
-                        novoItem.tipoItem = GetRandomValue(0, 2); // Tipo de item aleatório (0, 1 ou 2)
+                        novoItem.tipoItem = GetRandomValue(0, 3); // Tipo de item aleatório (0, 1, 2 ou 3)
                         novoItem.posItem = {static_cast<float>(coluna * tamanhoBloco + tamanhoBloco / 2), static_cast<float>(linha * tamanhoBloco + tamanhoBloco / 2)};
                         Itens.push_back(novoItem);
                     }
@@ -246,6 +246,8 @@ void mapa::desenhaItens(mapa * mapa) {
             case 2: // Item de número de bombas
                 DrawCircle(item.posItem.x, item.posItem.y, 20, PURPLE);
                 break;
+            case 3: // Item de bomba remota
+                DrawCircle(item.posItem.x, item.posItem.y, 20, ORANGE);
         }
     }
 }
@@ -264,6 +266,9 @@ void mapa::colisaoItens(player * player) {
                 case 2: // Aumenta o número de bombas
                     player->numeroBombas++;
                     player->numeroBombasTotal++;
+                    break;
+                case 3:
+                    player->bombaRemota = true; // Ativa a bomba remota
                     break;
             }
             item = Itens.erase(item); // Remove o item da lista

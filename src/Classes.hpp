@@ -23,6 +23,7 @@ class player {
         int pontos = 0; //Pontos do jogador
         int pontosAuxiliar = 0; //Pontos do jogador auxiliar
         bool vitoria = false; //Vitoria ou nao
+        bool bombaRemota = false; //Bomba remota ou nao
         
         player(void);
         void updateposplayer(player * player, mapa* mapa);
@@ -79,6 +80,7 @@ class bomba{
         void bombasMorte(player* player, mapa* mapa);
         void explosaoCadeia(mapa* mapa);
         void destroiMapa(bomba* bomba, mapa* mapa);
+        void explosaoRemota(player* player, mapa* mapa);
         Texture2D texbomba = LoadTexture("Texturas/bomba.png");
 
 };

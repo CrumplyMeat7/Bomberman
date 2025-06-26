@@ -52,7 +52,7 @@ void menu::escolhagameover(menu * menu){
 void menu::saveJogo(player * player, mapa * mapa) {
     FILE *arq = fopen("save.txt", "w");
     if (arq != NULL) {
-        fprintf(arq, "%d %d  %d %f %d\n", player->pontos, player->alcance, player->numeroBombasTotal, player->velplayer, mapa->faseAtual);
+        fprintf(arq, "%d %d  %d %f %d %d\n", player->pontos, player->alcance, player->numeroBombasTotal, player->velplayer, mapa->faseAtual, player->bombaRemota);
         fclose(arq);
     }
 }
@@ -60,7 +60,7 @@ void menu::saveJogo(player * player, mapa * mapa) {
 void menu::loadJogo(player * player, mapa * mapa) {
     FILE *arq = fopen("save.txt", "r");
     if (arq != NULL) {
-        fscanf(arq, "%d %d %d %f %d", &player->pontos, &player->alcance, &player->numeroBombasTotal, &player->velplayer, &mapa->faseAtual);
+        fscanf(arq, "%d %d %d %f %d %d", &player->pontos, &player->alcance, &player->numeroBombasTotal, &player->velplayer, &mapa->faseAtual, &player->bombaRemota);
         fclose(arq);
     } 
 }
